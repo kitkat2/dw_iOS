@@ -1,75 +1,41 @@
-import Foundation
-import Glibc
-var str = "Swift is a powerful and intuitive programming language for iOS, OS X, tvOS, and watchOS."
-let subStr = str[str.index(str.startIndex, offsetBy: 5)...str.index(str.startIndex, offsetBy: 19)]
-print("µÚ6µ½µÚ20¸ö×Ö·ûÎª:\(subStr)")
-let delOS = str.replacingOccurrences(of: "OS", with: "")
-print("É¾³ıOSºóµÃµ½µÄ×Ö·û´®Îª\(delOS)")
+import Ukit
+class ViewController: UIViewController {
+    override func viewDidLoad() {
+        super.viewDidLoad()
+let manager = FileManager.default
+let document = manager.urls(for: .documentDirectory, in: .userDomainMask).first?.path
+let file = document?.appending("/image") //å›¾ç‰‡æ–‡ä»¶å¤¹
 
-//»ñÈ¡µ±Ç°Ê±¼ä
-let currentDate = Date()
-//ÉèÖÃÊ±¼äÏÔÊ¾¸ñÊ½
-func dateFormatSet(date: Date, zone: Int = 0) -> String  {
-    let dateFormatter = DateFormatter()
-    dateFormatter.dateFormat = "yyyyÄêMÔÂddÈÕEEEE aa HH:mm"
-    //ÀûÓÃlocaleÊ¹Ê±¼äÄÜÏÔÊ¾ÎªÖĞÎÄ
-    dateFormatter.locale = Locale(identifier: "zh_CN")
-    if zone >= 0 {//zoneÎªÕı£¬Îª¶«Ê±Çø
-        dateFormatter.timeZone = TimeZone(abbreviation: "UTC+\(zone):00")
-    }else {//zoneÎª¸º£¬ÎªÎ÷Ê±Çø
-        dateFormatter.timeZone = TimeZone(abbreviation: "UTC\(zone):00")
+print(document!) //è¾“å‡ºDocumentè·¯å¾„ï¼Œæ–¹ä¾¿æŸ¥çœ‹
+if manager.fileExists(atPath: file!) {  //è‹¥è¯¥æ–‡ä»¶å¤¹å­˜åœ¨
+    let image = file?.appending("/bd.png")  //å›¾ç‰‡æ–‡ä»¶
+    if manager.fileExists(atPath: image!) {  //è‹¥è¯¥æ–‡ä»¶å­˜åœ¨ï¼Œåˆ™æ˜¾ç¤ºåˆ°ç•Œé¢ä¸Š
+        do{
+            let data = try Data(contentsOf: URL(fileURLWithPath: image!))
+            let img = UIImage(data: data)
+            let imageView = UIImageView(image: img)
+            imageView.frame = CGRect(x: 0, y: 100, width: 400, height: 300)
+            self.view.addSubview(imageView)
+        } catch {
+            print(error)
+        }
+    } else {  //è‹¥ä¸å­˜åœ¨ï¼Œåˆ™ä»ç½‘ç»œä¸‹è½½ä¸€ä¸ªå›¾ç‰‡å¹¶ä¿å­˜ä¸ºå›¾ç‰‡æ–‡ä»¶
+        let url = URL(string: "https://ss0.bdstatic.com/5aV1bjqh_Q23odCf/static/superman/img/logo/bd_logo1_31bdc765.png")
+        do{
+            let data = try Data(contentsOf: url!)
+            try data.write(to: URL(fileURLWithPath: image!), options: .atomicWrite)
+            print("æ–‡ä»¶ä¸å­˜åœ¨ï¼Œå·²æˆåŠŸåˆ›å»ºæ–‡ä»¶")
+        } catch {
+            print(error)
+        }
     }
-    //°ÑÊ±¼ä×ª»¯Îª×Ö·û´®ÒÔ±ãÏÔÊ¾
-    let dateString = dateFormatter.string(from: currentDate)
-    return dateString
+} else {  //è‹¥è¯¥æ–‡ä»¶å¤¹ä¸å­˜åœ¨ï¼Œåˆ™åˆ›å»ºè¯¥æ–‡ä»¶å¤¹
+    do {
+        try manager.createDirectory(atPath: file!, withIntermediateDirectories: true, attributes: nil)
+        print("æ–‡ä»¶å¤¹ä¸å­˜åœ¨ï¼Œå·²æˆåŠŸåˆ›å»ºæ–‡ä»¶å¤¹")
+    } catch {
+        print(error)
+    }
 }
-//beijing
-let beijing = dateFormatSet(date: currentDate, zone: 8)
-print("µ±Ç°±±¾©Ê±¼äÎª£º\(beijing)")
-//tokyo
-let tokyo = dateFormatSet(date: currentDate, zone: 9)
-print("µ±Ç°¶«¾©Ê±¼äÎª£º\(tokyo)")
-//newYork 
-let newYork = dateFormatSet(date: currentDate, zone: -5)
-print("µ±Ç°Å¦Ô¼Ê±¼äÎª£º\(newYork)") 
-//lodon
-let lodon = dateFormatSet(date: currentDate, zone: 0)
-print("µ±Ç°Â×¶ØÊ±¼äÎª£º\(lodon)")
-
-print("------------------3---------------------------")
-let dictionary = ["Date": ["Beijing": beijing, "Tokyo": tokyo, "NewYork": newYork, "Lodon": lodon], "Subtring": ["SubstrOne": subStr, "AfterDelOS": delOS ]]as! AnyObject
-
-let defDoc = FileManager.default 
-
-if var  dicPath = defDoc.urls(for: .documentDirectory, in: .userDomainMask).first?.path {
-    dicPath.append("/text.txt")
-    print(try? dictionary.write(toFile: dicPath, atomically: true))
+   }
 }
-
-print("------------------4---------------------------")
-let  image = URL(string:"http://www.vblurpage.com/pictures/mags/1214/crossbeat_13_12_big.jpg")
-let data = try Data(contentsOf:image!)
-//let defDoc = FileManager.default
-var path = defDoc.urls(for: .documentDirectory, in: .userDomainMask).first! 
-    path.appendPathComponent("blur.jpg")
-    try data.write(to: path)
-
-print("------------------5---------------------------")
-enum MyError:Error{
-    case Zero
-    case NotURL
-}
-
-guard let dictionaryUrl = URL(string:"https://cn.bing.com/dict/search?q=pretend&FORM=BDVSP6&mkt=zh-cn") else{
-    throw MyError.NotURL
-}
-let jsondate = try! Data(contentsOf: dictionaryURL)
-let json = try! JSONSerialization.jsonObject(with: jsondata, options: .allowFragments)
-guard let dic = json as? [String:Any] else{
-    throw MyError.NotURL
-}
-guard let dictionary = dic["wordsinfo"] as? [String:String] else{
-    throw MyError.NotURL
-}
-let words = dictionary["words"]
-print(words)
