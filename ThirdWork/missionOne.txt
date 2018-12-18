@@ -1,0 +1,91 @@
+
+//定义一个Dictionary
+let dictionary = [["name": "Finn", "age": 15], ["name": "Tarjei", "age": 19]]
+//用map函数返回age字符串数组
+let nameArray = dictionary.map( {$0["age"]!} )
+print(nameArray)
+
+
+
+let strArray = ["hgiiswi2","3002090","1whv83n","12","3vs25"]
+//将字符串元素强转为Int类型，不为nil的则可以转为Int，然后用filter过滤出
+let intArray = strArray.filter( {Int($0) != nil} )
+print(intArray)
+
+var str = strArray.reduce("", { $0 + "," + $1} )
+//整合后字符串的第一个字符为","，用remove将其移除
+str.remove(at: str.startIndex)
+print(str)
+
+
+
+//定义一个整型数组
+let intArr = [89,3,32,5,66,95]
+//用 reduce 方法求整数数组的最大值、最小值、总数和
+let result = intArr.reduce((max: intArr[0], min: intArr[0], sum: 0), { 
+    (max: max($0.max, $1), min: min($0.min,$1), sum: $0.sum + $1)
+})
+print(result)
+
+
+
+//分别定义几个类型不同的函数
+//()  ->Int
+func funcOne () -> Int{
+
+    let a = 12
+    let b = 21
+    return a + b
+}
+
+//(Int, Int) -> Int
+func funcTwo (a: Int, b: Int) -> Int {
+    return a + b
+}
+//(Int) -> Int
+func funcThree (a: Int) -> Int {
+    return a+1
+}
+//(Int) -> Bool
+func funcFour (a: Int) -> Bool {
+    return a > 12
+}
+//建立一个函数数组
+let funcArr : [Any] = [funcOne, funcTwo, funcThree, funcFour]
+
+//找出（Int）-> Int 的函数，用该函数存储在数组中的下标来表示
+for (index, value) in funcArr.enumerated() { //调用数组的enumerated()方法将数组元素一一列举出来
+    if value is (Int) -> Int {
+        print("类型为(Int)->Int的函数在数组中为:第\(index + 1)个")
+    }
+}
+
+
+import func Darwin.sqrt    
+extension Int {
+    func sqrt() -> Double {
+        return Darwin.sqrt(Double(self))
+    }
+}
+
+print(9.sqrt()) //输出结果为3.0
+
+
+
+func maxMin<T: Comparable>(a: T...) -> (T, T) {
+    var max = a[0]
+    var min = a[0]
+    for i in a {
+        if max < i  {
+            max = i
+        }else if i < min {
+            min = i
+        }
+    }
+    return (max,min)
+}
+//test
+print(maxMin(a: 1,3,66,89,0))
+print(maxMin(a: 5.6, 7.8, 4.3, 1.1))
+print(maxMin(a: "R", "d", "j", "Ironman"))
+

@@ -1,0 +1,75 @@
+import Foundation
+import Glibc
+var str = "Swift is a powerful and intuitive programming language for iOS, OS X, tvOS, and watchOS."
+let subStr = str[str.index(str.startIndex, offsetBy: 5)...str.index(str.startIndex, offsetBy: 19)]
+print("第6到第20个字符为:\(subStr)")
+let delOS = str.replacingOccurrences(of: "OS", with: "")
+print("删除OS后得到的字符串为\(delOS)")
+
+//获取当前时间
+let currentDate = Date()
+//设置时间显示格式
+func dateFormatSet(date: Date, zone: Int = 0) -> String  {
+    let dateFormatter = DateFormatter()
+    dateFormatter.dateFormat = "yyyy年M月dd日EEEE aa HH:mm"
+    //利用locale使时间能显示为中文
+    dateFormatter.locale = Locale(identifier: "zh_CN")
+    if zone >= 0 {//zone为正，为东时区
+        dateFormatter.timeZone = TimeZone(abbreviation: "UTC+\(zone):00")
+    }else {//zone为负，为西时区
+        dateFormatter.timeZone = TimeZone(abbreviation: "UTC\(zone):00")
+    }
+    //把时间转化为字符串以便显示
+    let dateString = dateFormatter.string(from: currentDate)
+    return dateString
+}
+//beijing
+let beijing = dateFormatSet(date: currentDate, zone: 8)
+print("当前北京时间为：\(beijing)")
+//tokyo
+let tokyo = dateFormatSet(date: currentDate, zone: 9)
+print("当前东京时间为：\(tokyo)")
+//newYork 
+let newYork = dateFormatSet(date: currentDate, zone: -5)
+print("当前纽约时间为：\(newYork)") 
+//lodon
+let lodon = dateFormatSet(date: currentDate, zone: 0)
+print("当前伦敦时间为：\(lodon)")
+
+print("------------------3---------------------------")
+let dictionary = ["Date": ["Beijing": beijing, "Tokyo": tokyo, "NewYork": newYork, "Lodon": lodon], "Subtring": ["SubstrOne": subStr, "AfterDelOS": delOS ]]as! AnyObject
+
+let defDoc = FileManager.default 
+
+if var  dicPath = defDoc.urls(for: .documentDirectory, in: .userDomainMask).first?.path {
+    dicPath.append("/text.txt")
+    print(try? dictionary.write(toFile: dicPath, atomically: true))
+}
+
+print("------------------4---------------------------")
+let  image = URL(string:"http://www.vblurpage.com/pictures/mags/1214/crossbeat_13_12_big.jpg")
+let data = try Data(contentsOf:image!)
+//let defDoc = FileManager.default
+var path = defDoc.urls(for: .documentDirectory, in: .userDomainMask).first! 
+    path.appendPathComponent("blur.jpg")
+    try data.write(to: path)
+
+print("------------------5---------------------------")
+enum MyError:Error{
+    case Zero
+    case NotURL
+}
+
+guard let dictionaryUrl = URL(string:"https://cn.bing.com/dict/search?q=pretend&FORM=BDVSP6&mkt=zh-cn") else{
+    throw MyError.NotURL
+}
+let jsondate = try! Data(contentsOf: dictionaryURL)
+let json = try! JSONSerialization.jsonObject(with: jsondata, options: .allowFragments)
+guard let dic = json as? [String:Any] else{
+    throw MyError.NotURL
+}
+guard let dictionary = dic["wordsinfo"] as? [String:String] else{
+    throw MyError.NotURL
+}
+let words = dictionary["words"]
+print(words)
